@@ -1,0 +1,21 @@
+image:
+  tag: 8.0.33-debian-11-r27
+
+architecture: replication
+auth:
+  rootPassword: secret
+  username: java
+  password: java-pass
+  database: java-db
+
+volumePermissions:
+  enabled: true
+
+primary:
+  persistence:
+    enabled: false
+
+secondary:
+  replicaCount: 2
+  persistence:
+    enabled: false

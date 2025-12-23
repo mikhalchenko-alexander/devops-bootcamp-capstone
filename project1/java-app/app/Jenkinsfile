@@ -1,0 +1,67 @@
+@Library('java-app')_
+
+pipeline {
+    agent any
+
+    environment {
+        ECR_REGISTRY = '458405758445.dkr.ecr.eu-central-1.amazonaws.com/1-eks-java-app'
+    }
+
+    stages {
+        stage('Increment version') {
+            steps {
+                script {
+                    dir('project1/java-app/app') {
+                        incrementVersion()
+                        sh "sed -i '/app:/,/version:/s/version: \"[^\"]*\"/version: \"${env.IMAGE_VERSION}\"/' ../java-app-helm-chart/values.yaml"
+                    }
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    dir('project1/java-app/app') {
+                        test()
+                    }
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                   dir('project1/java-app/app') {
+                       sh './gradlew clean bootJar'
+                   }
+                }
+            }
+        }
+
+        stage('Docker image') {
+            steps {
+                script {
+                    dir('project1/java-app/app') {
+                        dockerImage "${env.ECR_REGISTRY}:${IMAGE_VERSION}", "${ECR_REGISTRY}", "eu-central-1"
+                    }
+                }
+            }
+        }
+
+        stage('Git push') {
+            steps {
+                script {
+                    gitPush 'git@github.com:mikhalchenko-alexander/devops-bootcamp-capstone.git'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                 deploy "devops-bootcamp", "eu-central-1"
+            }
+        }
+    }
+}
+

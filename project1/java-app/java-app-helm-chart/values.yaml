@@ -1,0 +1,21 @@
+database:
+  server: "mysql-primary.default.svc.cluster.local"
+  user: amF2YQ== # java
+  pass: amF2YS1wYXNz # java-pass
+  name: amF2YS1kYg== # java-db
+  rootPass: c2VjcmV0 # secret
+
+app:
+  image: 458405758445.dkr.ecr.eu-central-1.amazonaws.com/11-eks-java-app
+  version: "1.21.0-34"
+  port: 8080
+  replicas: 3
+
+ingress:
+  host: java-app.com
+  port: 8080
+  path: /
+
+traefik:
+  ingressClass:
+    name: traefik

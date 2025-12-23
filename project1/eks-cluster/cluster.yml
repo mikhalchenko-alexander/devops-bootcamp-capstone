@@ -1,0 +1,19 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: devops-bootcamp
+  region: eu-central-1
+  version: "1.29"
+
+managedNodeGroups:
+  - name: ng-1
+    instanceType: m5.large
+    minSize: 1
+    maxSize: 3
+
+
+fargateProfiles:
+  - name: fp-default
+    selectors:
+      - namespace: java-app

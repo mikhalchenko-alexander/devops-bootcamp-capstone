@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: java-app-ingress
+spec:
+  ingressClassName: {{ .Values.traefik.ingressClass.name }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+    - http:
+        paths:
+          - path: {{ .Values.ingress.path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: java-app
+                port:
+                  number: {{ .Values.ingress.port }}
+
