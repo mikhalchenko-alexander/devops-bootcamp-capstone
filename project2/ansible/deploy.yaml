@@ -2,7 +2,7 @@
   hosts: localhost
   tasks:
     - name: Update Kubeconfig
-      shell: update-kubeconfig.sh
+      shell: ./update-kubeconfig.sh
 
     - name: Create docker registry secret directly
       kubernetes.core.k8s:
