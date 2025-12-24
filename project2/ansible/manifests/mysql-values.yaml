@@ -1,0 +1,37 @@
+image:
+  repository: bitnamilegacy/mysql
+  tag: 9.4
+
+architecture: replication
+auth:
+  rootPassword: secret
+  username: java
+  password: java-pass
+  database: java-db
+
+primary:
+  persistence:
+    enabled: true
+    storageClass: gp3
+    size: "8Gi"
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "768Mi"
+      cpu: "500m"
+
+secondary:
+  replicaCount: 2
+  persistence:
+    enabled: true
+    storageClass: gp3
+    size: "8Gi"
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "768Mi"
+      cpu: "500m"

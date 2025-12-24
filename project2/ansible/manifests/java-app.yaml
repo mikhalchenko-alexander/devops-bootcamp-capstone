@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: java-app
+spec:
+  selector:
+    app: java-app
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: NodePort
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-app
+  labels:
+    app: java-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: java-app
+  template:
+    metadata:
+      name: java-app
+      labels:
+        app: java-app
+    spec:
+      containers:
+        - name: java-app
+          image: aam123/java-app:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db_user
+            - name: DB_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db_pass
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db_name
+            - name: DB_SERVER
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: db_server
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: regcred
