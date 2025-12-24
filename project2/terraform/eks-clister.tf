@@ -3,7 +3,7 @@ module "eks" {
   version = "19.17.2"
 
   cluster_name                   = "java-app-eks-cluster"
-  cluster_version                = "1.27"
+  cluster_version = "1.34"
   cluster_endpoint_public_access = true
 
   subnet_ids = module.java-app-vpc.private_subnets
