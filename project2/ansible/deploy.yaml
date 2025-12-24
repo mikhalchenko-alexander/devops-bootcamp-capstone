@@ -4,6 +4,13 @@
     - name: Update Kubeconfig
       shell: ./update-kubeconfig.sh
 
+    - name: Create a k8s namespace for Java app
+      kubernetes.core.k8s:
+        name: java-app
+        api_version: v1
+        kind: Namespace
+        state: present
+
     - name: Create docker registry secret directly
       kubernetes.core.k8s:
         state: present
@@ -34,6 +41,13 @@
         release_namespace: ingress
         create_namespace: true
         chart_ref: ingress-nginx/ingress-nginx
+        wait: false
+        replace: true
+
+    - name: Create gp3 storage class for MySQL
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('file', 'manifests/storage-class.yaml') }}"
 
     - name: Deploy mysql
       kubernetes.core.helm:
@@ -41,19 +55,13 @@
         release_namespace: default
         chart_ref: oci://registry-1.docker.io/bitnamicharts/mysql
         values: "{{ lookup('file', 'manifests/mysql-values.yaml') | from_yaml }}"
-
-    - name: Create a k8s namespace for Java app
-      kubernetes.core.k8s:
-        name: java-app
-        api_version: v1
-        kind: Namespace
-        state: present
+        wait: false
+        replace: true
 
     - name: Deploy all k8s manifests
       kubernetes.core.k8s:
         definition: "{{ lookup('file', '{{ item }}') }}"
         state: present
-        create_namespace: true
         namespace: java-app
       with_fileglob:
         - "manifests/java-*.yaml"

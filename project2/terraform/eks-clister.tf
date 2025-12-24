@@ -16,6 +16,10 @@ module "eks" {
 
   eks_managed_node_groups = {
     dev = {
+      iam_role_additional_policies = {
+        AmazonEBSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+      }
+
       min_size     = 1
       max_size     = 3
       desired_size = 3
@@ -23,4 +27,9 @@ module "eks" {
       instance_types = ["t3.small"]
     }
   }
+
+  cluster_addons = {
+    aws-ebs-csi-driver = {}
+  }
+
 }
