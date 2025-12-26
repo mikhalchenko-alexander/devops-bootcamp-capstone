@@ -1,5 +1,7 @@
 def gv
-def projectDir = "project3/java-app"
+def JAVA_APP_DIR = "project3/java-app"
+def TERRAFORM_DIR = "project3/terraform"
+def IMAGE_NAME = "aam123/java-app:capstone3"
 
 pipeline {
     agent any
@@ -10,7 +12,7 @@ pipeline {
         stage("init") {
             steps {
                 script {
-                    dir(projectDir) {
+                    dir(JAVA_APP_DIR) {
                         gv = load "script.groovy"
                     }
                 }
@@ -19,7 +21,7 @@ pipeline {
         stage("build jar") {
             steps {
                 script {
-                    dir(projectDir) {
+                    dir(JAVA_APP_DIR) {
                         gv.buildJar()
                     }
                 }
@@ -29,19 +31,57 @@ pipeline {
         stage("build image") {
             steps {
                 script {
-                    dir(projectDir) {
-                        gv.buildImage("aam123/java-app:capstone3")
+                    dir(JAVA_APP_DIR) {
+                        gv.buildImage(IMAGE_NAME)
                     }
                 }
             }
         }
 
-        stage("deploy") {
-            steps {
-                script {
-                    gv.deployApp()
-                }
+        stage("provision server") {
+              environment {
+                    AWS_ACCESS_KEY_ID = credentials('jenkins_aws_access_key_id')
+                    AWS_SECRET_ACCESS_KEY = credentials('jenkins_aws_secret_access_key')
+              }
+              steps {
+                    script {
+                          dir(TERRAFORM_DIR) {
+                                sh "terraform init"
+                                sh "terraform apply --auto-approve"
+                                EC2_PUBLIC_IP = sh(
+                                  script: "terraform output ec2-public_ip",
+                                  returnStdout: true
+                                ).trim()
+                          }
+                    }
+              }
             }
+
+
+        stage("deploy") {
+              environment {
+                    DOCKER_CREDS = credentials('docker-hub-repo')
+              }
+              steps {
+                  script {
+                      dir(JAVA_APP_DIR) {
+                          echo "waiting for EC2 server to initialize"
+                          sleep(time: 90, unit: "SECONDS")
+
+                          echo 'deploying docker image to EC2...'
+                          echo "${EC2_PUBLIC_IP}"
+
+                          def shellCmd = "bash ./server-cmds.sh ${IMAGE_NAME} ${DOCKER_CREDS_USR} ${DOCKER_CREDS_PSW}"
+                          def ec2Instance = "ec2-user@${EC2_PUBLIC_IP}"
+
+                          sshagent(['dev-ops-bootcamp']) {
+                              sh "scp -o StrictHostKeyChecking=no server-cmds.sh ${ec2Instance}:/home/ec2-user"
+                              sh "scp -o StrictHostKeyChecking=no docker-compose.yaml ${ec2Instance}:/home/ec2-user"
+                              sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} ${shellCmd}"
+                          }
+                      }
+                  }
+              }
         }
     }
 }

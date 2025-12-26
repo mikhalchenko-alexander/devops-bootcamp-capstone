@@ -1,0 +1,5 @@
+services:
+  app:
+    image: aam123/java-app:capstone3
+    ports:
+      - "8080:8080"
