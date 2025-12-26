@@ -1,4 +1,5 @@
 def gv
+def projectDir = "project3/java-app"
 
 pipeline {
     agent any
@@ -9,14 +10,18 @@ pipeline {
         stage("init") {
             steps {
                 script {
-                    gv = load "script.groovy"
+                    dir(projectDir) {
+                        gv = load "script.groovy"
+                    }
                 }
             }
         }
         stage("build jar") {
             steps {
                 script {
-                    gv.buildJar()
+                    dir(projectDir) {
+                        gv.buildJar()
+                    }
                 }
             }
         }
@@ -24,7 +29,9 @@ pipeline {
         stage("build image") {
             steps {
                 script {
-                    gv.buildImage(tag: "aam123/java-app:capstone3")
+                    dir(projectDir) {
+                        gv.buildImage(tag: "aam123/java-app:capstone3")
+                    }
                 }
             }
         }
