@@ -10,7 +10,7 @@ fi
 
 docker --version
 
-docker build -t jenkins-cutom:latest .
+docker build -t jenkins-cutom:latest --build-arg DOCKER_GROUP_ID=$(stat -c '%g' /var/run/docker.sock) .
 
 echo "Running Jenkins using Docker compose stack..."
 DOCKER_PATH=$(which docker) docker compose up -d
