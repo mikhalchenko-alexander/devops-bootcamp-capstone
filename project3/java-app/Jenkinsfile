@@ -30,7 +30,7 @@ pipeline {
             steps {
                 script {
                     dir(projectDir) {
-                        gv.buildImage(tag: "aam123/java-app:capstone3")
+                        gv.buildImage("aam123/java-app:capstone3")
                     }
                 }
             }
