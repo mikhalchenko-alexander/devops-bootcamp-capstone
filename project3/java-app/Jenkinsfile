@@ -22,6 +22,9 @@ pipeline {
             }
         }
         stage("build jar") {
+            when {
+                expression { params.ACTION == 'deploy' }
+            }
             steps {
                 script {
                     dir(JAVA_APP_DIR) {
@@ -32,6 +35,9 @@ pipeline {
         }
 
         stage("build image") {
+            when {
+                expression { params.ACTION == 'deploy' }
+            }
             steps {
                 script {
                     dir(JAVA_APP_DIR) {
