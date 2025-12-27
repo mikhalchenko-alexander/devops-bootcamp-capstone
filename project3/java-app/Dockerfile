@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 amazoncorretto:8-alpine3.17-jre
+FROM amazoncorretto:8-alpine3.17-jre
 
 EXPOSE 8080
 
