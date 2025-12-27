@@ -5,6 +5,9 @@ def IMAGE_NAME = "aam123/java-app:capstone3"
 
 pipeline {
     agent any
+    parameters {
+        choice(name: 'ACTION', choices: ['deploy', 'destroy'], description: 'Choose to deploy the application or destroy the infrastructure')
+    }
     tools {
         maven 'Maven'
     }
@@ -39,6 +42,9 @@ pipeline {
         }
 
         stage("provision server") {
+              when {
+                  expression { params.ACTION == 'deploy' }
+              }
               environment {
                     AWS_ACCESS_KEY_ID = credentials('jenkins_aws_access_key_id')
                     AWS_SECRET_ACCESS_KEY = credentials('jenkins_aws_secret_access_key')
@@ -57,8 +63,29 @@ pipeline {
               }
             }
 
+        stage("destroy infrastructure") {
+              when {
+                  expression { params.ACTION == 'destroy' }
+              }
+              environment {
+                    AWS_ACCESS_KEY_ID = credentials('jenkins_aws_access_key_id')
+                    AWS_SECRET_ACCESS_KEY = credentials('jenkins_aws_secret_access_key')
+              }
+              steps {
+                    script {
+                          dir(TERRAFORM_DIR) {
+                                sh "terraform init"
+                                sh "terraform destroy --auto-approve"
+                          }
+                    }
+              }
+            }
+
 
         stage("deploy") {
+              when {
+                  expression { params.ACTION == 'deploy' }
+              }
               environment {
                     DOCKER_CREDS = credentials('docker-hub-repo')
               }
