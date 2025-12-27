@@ -10,6 +10,8 @@ data "aws_ami" "amazon_linux" {
     name = "virtualization-type"
     values = ["hvm"]
   }
+
+  owners = ["amazon"]
 }
 
 data "aws_vpc" "default" {
@@ -48,7 +50,7 @@ resource "aws_vpc_security_group_egress_rule" "egress_all" {
 
 resource "aws_instance" "java-app-instance" {
   ami                         = data.aws_ami.amazon_linux.id
-  instance_type               = "t3.micro"
+  instance_type = "t4g.micro"
   key_name                    = "devops-bootcamp"
   security_groups = [aws_security_group.java_app.name]
   associate_public_ip_address = true
