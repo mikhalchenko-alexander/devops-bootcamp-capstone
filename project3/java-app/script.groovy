@@ -6,7 +6,7 @@ def buildJar() {
 def buildImage(String tag) {
     echo "building the docker image..."
     withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-        sh "docker build -t ${tag} --platform linux/amd64 ."
+        sh "DOCKER_DEFAULT_PLATFORM=linux/amd64 docker build -t ${tag} ."
         sh 'echo $PASS | docker login -u $USER --password-stdin'
         sh "docker push ${tag}"
     }

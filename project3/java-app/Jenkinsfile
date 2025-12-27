@@ -32,9 +32,6 @@ pipeline {
         }
 
         stage("build image") {
-            environment {
-                DOCKER_DEFAULT_PLATFORM = "linux/amd64"
-            }
             steps {
                 script {
                     dir(JAVA_APP_DIR) {
