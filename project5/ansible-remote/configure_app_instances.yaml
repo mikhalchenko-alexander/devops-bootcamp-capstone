@@ -39,5 +39,5 @@
       environment:
         DB_USER: "{{ mysql_users[0].name }}"
         DB_PWD: "{{ mysql_users[0].password }}"
-        DB_SERVER: "{{ hostvars[groups['_java_app_database'][0]]['ansible_default_ipv4']['address'] }}"
+        DB_SERVER: "{{ hostvars[groups['_java_app_database'][0]].ansible_facts['default_ipv4']['address'] }}"
         DB_NAME: "{{ mysql_databases[0].name }}"
