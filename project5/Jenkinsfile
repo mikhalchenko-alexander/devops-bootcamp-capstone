@@ -4,6 +4,9 @@ def CONTROL_NODE = "root@64.226.86.32"
 
 pipeline {
     agent any
+    tools {
+        gradle 'gradle'
+    }
 
     stages {
 
