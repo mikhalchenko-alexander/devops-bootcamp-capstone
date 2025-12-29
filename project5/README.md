@@ -54,3 +54,5 @@ Ansible, Jenkins, DigitalOcean, AWS, Boto3, Docker, Java, Maven, Linux, Git
 8. Configure `aws_credentials` secret file in Jenkins UI
 9. Install Gradle tool in Jenkins UI
 10. Run Jenkins pipeline
+11. Verify that the application is running on the managed nodes. Note: The demo app is not provisioning the database
+    table and users. You have to insert them manually.
