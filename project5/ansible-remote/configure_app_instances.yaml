@@ -2,16 +2,17 @@
   hosts: _java_app_database
   become: true
   vars:
-    app_folder: /root/ansible
+    ansible_folder: /root/ansible
   vars_files:
-    - "{{ app_folder }}/vars.yaml"
+    - "{{ ansible_folder }}/vars.yaml"
   roles:
     - role: geerlingguy.mysql
 
 - name: Configure app server
   hosts: _java_app
   vars:
-    app_folder: /root/ansible
+    ansible_folder: /root/ansible
+    app_folder: /home/ubuntu/app
   tasks:
     - name: Install Java
       become: true
@@ -23,13 +24,13 @@
 
     - name: Create app directory
       ansible.builtin.file:
-        path: "{{ app_folder }}"
+        path: "{{ ansible_folder }}"
         state: directory
         mode: '0755'
 
     - name: Copy jar file
       ansible.builtin.copy:
-        src: "{{ app_folder }}/app.jar"
+        src: "{{ ansible_folder }}/app.jar"
         dest: "{{ app_folder }}/app.jar"
     - name: Start app
       command: java -jar {{ app_folder }}/app.jar &
