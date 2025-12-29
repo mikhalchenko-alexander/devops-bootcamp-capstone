@@ -29,7 +29,7 @@ pipeline {
         stage('Build Jar file') {
             steps {
                 echo 'Building Jar file'
-                dir(PROJECT_DIR) {
+                dir(JAVA_APP_DIR) {
                     sh 'gradle build'
                 }
             }
