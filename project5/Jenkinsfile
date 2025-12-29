@@ -35,7 +35,7 @@ pipeline {
                         sshagent(['dev-ops-bootcamp']) {
                             sh "ssh -o StrictHostKeyChecking=no ${CONTROL_NODE} mkdir -p /root/ansible"
                             sh "scp -o StrictHostKeyChecking=no ansible-remote/* ${CONTROL_NODE}:/root/ansible"
-                            sh "scp -o StrictHostKeyChecking=no "$SSH_KEY_FILE" ${CONTROL_NODE}:/root/.ssh/dev-ops-bootcamp.pem"
+                            sh "scp -o StrictHostKeyChecking=no ${SSH_KEY_FILE} ${CONTROL_NODE}:/root/.ssh/dev-ops-bootcamp.pem"
                             sh "ssh -o StrictHostKeyChecking=no ${CONTROL_NODE} chmod 600 /root/.ssh/dev-ops-bootcamp.pem"
                         }
                     }
