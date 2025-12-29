@@ -52,4 +52,5 @@ Ansible, Jenkins, DigitalOcean, AWS, Boto3, Docker, Java, Maven, Linux, Git
 7. Customize `CONTROL_NODE` variable in [Jenkinsfile](Jenkinsfile) with the IP address of the Ansible Control Node
    server
 8. Configure `aws_credentials` secret file in Jenkins UI
-9. Run Jenkins pipeline
+9. Install Gradle tool in Jenkins UI
+10. Run Jenkins pipeline
