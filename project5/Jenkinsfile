@@ -1,0 +1,46 @@
+def PROJECT_DIR = "project5"
+def CONTROL_NODE = "root@0.0.0.0"
+
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Configure Ansible control node') {
+            steps {
+                echo 'Installing Ansible'
+                script {
+                    dir(PROJECT_DIR) {
+                        
+                        sshagent(['dev-ops-bootcamp']) {
+                            def shellCmd = "./configure-control-node.sh"
+
+                            sh "scp -o StrictHostKeyChecking=no configure-control-node.sh ${CONTROL_NODE}:/root"
+                            sh "ssh -o StrictHostKeyChecking=no ${CONTROL_NODE} ${shellCmd}"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Copy files to Ansible control node') {
+            steps {
+                echo 'Copying files to Ansible control node'
+                dir(PROJECT_DIR) {
+                    withCredentials([
+                        sshUserPrivateKey(
+                            credentialsId: 'dev-ops-bootcamp',
+                            keyFileVariable: 'SSH_KEY_FILE'
+                        )
+                    ])
+                    sshagent(['dev-ops-bootcamp']) {
+                        sh "ssh -o StrictHostKeyChecking=no ${CONTROL_NODE} mkdir -p /root/ansible"
+                        sh "scp -o StrictHostKeyChecking=no ansible-remote/* ${CONTROL_NODE}:/root/ansible"
+                        sh "scp -o StrictHostKeyChecking=no "$SSH_KEY_FILE" ${CONTROL_NODE}:/root/.ssh/dev-ops-bootcamp.pem"
+                        sh "ssh -o StrictHostKeyChecking=no ${CONTROL_NODE} chmod 600 /root/.ssh/dev-ops-bootcamp.pem"
+                    }
+                }
+            }
+        }
+    }
+}
