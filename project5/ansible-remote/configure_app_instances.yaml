@@ -2,16 +2,16 @@
   hosts: _java_app_database
   become: true
   vars:
-    app_folder: /home/ubuntu/app
+    app_folder: /root/ansible
   vars_files:
-    - "{{ app_folder }}/vars_remote.yaml"
+    - "{{ app_folder }}/vars.yaml"
   roles:
     - role: geerlingguy.mysql
 
 - name: Configure app server
   hosts: _java_app
   vars:
-    app_folder: /home/ubuntu/app
+    app_folder: /root/ansible
   tasks:
     - name: Install Java
       become: true

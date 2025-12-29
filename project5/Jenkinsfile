@@ -1,4 +1,5 @@
 def PROJECT_DIR = "project5"
+def JAVA_APP_DIR = "${PROJECT_DIR}/java-app"
 def CONTROL_NODE = "root@64.226.86.32"
 
 pipeline {
@@ -18,6 +19,15 @@ pipeline {
                             sh "ssh -o StrictHostKeyChecking=no ${CONTROL_NODE} ${shellCmd}"
                         }
                     }
+                }
+            }
+        }
+
+        stage('Build Jar file') {
+            steps {
+                echo 'Building Jar file'
+                dir(PROJECT_DIR) {
+                    gradle build
                 }
             }
         }
@@ -44,6 +54,7 @@ pipeline {
                             sh "scp -o StrictHostKeyChecking=no ${AWS_CREDENTIALS_FILE} ${CONTROL_NODE}:/root/.aws/credentials"
                             sh "ssh -o StrictHostKeyChecking=no ${CONTROL_NODE} chmod 600 /root/.ssh/dev-ops-bootcamp.pem"
                             sh "ssh -o StrictHostKeyChecking=no ${CONTROL_NODE} chmod 600 /root/.aws/credentials"
+                            sh "scp -o StrictHostKeyChecking=no ${JAVA_APP_DIR}/build/libs/build-tools-exercises-1.0-SNAPSHOT.jar ${CONTROL_NODE}:/root/ansible/app.jar"
                         }
                     }
                 }

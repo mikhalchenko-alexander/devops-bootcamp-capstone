@@ -1,4 +1,4 @@
 #!/bin/bash
 sudo apt-get update
 sudo apt-get install -y ansible python3 python3-boto3
-ansible-galaxy collection install geerlingguy.mysql
+ansible-galaxy role install geerlingguy.mysql
