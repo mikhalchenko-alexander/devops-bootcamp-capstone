@@ -57,7 +57,7 @@ pipeline {
                             sh "scp -o StrictHostKeyChecking=no ${AWS_CREDENTIALS_FILE} ${CONTROL_NODE}:/root/.aws/credentials"
                             sh "ssh -o StrictHostKeyChecking=no ${CONTROL_NODE} chmod 600 /root/.ssh/dev-ops-bootcamp.pem"
                             sh "ssh -o StrictHostKeyChecking=no ${CONTROL_NODE} chmod 600 /root/.aws/credentials"
-                            sh "scp -o StrictHostKeyChecking=no ${JAVA_APP_DIR}/build/libs/build-tools-exercises-1.0-SNAPSHOT.jar ${CONTROL_NODE}:/root/ansible/app.jar"
+                            sh "scp -o StrictHostKeyChecking=no java-app/build/libs/build-tools-exercises-1.0-SNAPSHOT.jar ${CONTROL_NODE}:/root/ansible/app.jar"
                         }
                     }
                 }
