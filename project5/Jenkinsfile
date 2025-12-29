@@ -30,7 +30,7 @@ pipeline {
             steps {
                 echo 'Building Jar file'
                 dir(PROJECT_DIR) {
-                    gradle build
+                    sh 'gradle build'
                 }
             }
         }
