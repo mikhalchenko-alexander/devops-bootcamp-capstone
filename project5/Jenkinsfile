@@ -54,7 +54,7 @@ pipeline {
             steps {
                 echo 'Running Ansible playbook'
                 sshagent(['dev-ops-bootcamp']) {
-                    sh "ssh -o StrictHostKeyChecking=no ${CONTROL_NODE} cd ansible && ansible-playbook -i inventory_aws_ec2.yaml -e "@vars.yaml" configure_app_instances.yaml"
+                    sh """ssh -o StrictHostKeyChecking=no ${CONTROL_NODE} cd ansible && ansible-playbook -i inventory_aws_ec2.yaml -e "@vars.yaml" configure_app_instances.yaml"""
                 }
             }
         }
