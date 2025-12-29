@@ -1,0 +1,8 @@
+mysql_root_password: s3cr3t-root-pass
+mysql_databases:
+  - name: java_app
+mysql_users:
+  - name: java_app
+    password: java_app
+    host: '%'
+    priv: 'java_app.*:ALL'

@@ -1,0 +1,42 @@
+- name: Configure DB server
+  hosts: _java_app_database
+  become: true
+  vars:
+    app_folder: /home/ubuntu/app
+  vars_files:
+    - "{{ app_folder }}/vars_remote.yaml"
+  roles:
+    - role: geerlingguy.mysql
+
+- name: Configure app server
+  hosts: _java_app
+  vars:
+    app_folder: /home/ubuntu/app
+  tasks:
+    - name: Install Java
+      become: true
+      ansible.builtin.apt:
+        name:
+          - openjdk-17-jre-headless
+        update_cache: yes
+        state: present
+
+    - name: Create app directory
+      ansible.builtin.file:
+        path: "{{ app_folder }}"
+        state: directory
+        mode: '0755'
+
+    - name: Copy jar file
+      ansible.builtin.copy:
+        src: "{{ app_folder }}/app.jar"
+        dest: "{{ app_folder }}/app.jar"
+    - name: Start app
+      command: java -jar {{ app_folder }}/app.jar &
+      async: 1000
+      poll: 0
+      environment:
+        DB_USER: "{{ mysql_users[0].name }}"
+        DB_PWD: "{{ mysql_users[0].password }}"
+        DB_SERVER: "{{ hostvars[groups['_java_app_database'][0]]['ansible_default_ipv4']['address'] }}"
+        DB_NAME: "{{ mysql_databases[0].name }}"

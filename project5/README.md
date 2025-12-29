@@ -44,5 +44,12 @@ Ansible, Jenkins, DigitalOcean, AWS, Boto3, Docker, Java, Maven, Linux, Git
    ```sh
    pip3 install -r requirements.txt
    ```
-5. Run [provision-control-node.sh](provision-control-node.sh) to provision Ansible Control Node server
-6. 
+5. Run [provision-nodes.sh](provision-nodes.sh) to provision Ansible Control Node server and managed nodes
+   ```sh   
+   ./provision-nodes.sh
+   ```
+6. Configure Jenkins pipeline in Jenkins UI
+7. Customize `CONTROL_NODE` variable in [Jenkinsfile](Jenkinsfile) with the IP address of the Ansible Control Node
+   server
+8. Configure `aws_credentials` secret file in Jenkins UI
+9. Run Jenkins pipeline
