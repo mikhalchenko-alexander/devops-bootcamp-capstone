@@ -1,5 +1,5 @@
 def PROJECT_DIR = "project5"
-def CONTROL_NODE = "root@0.0.0.0"
+def CONTROL_NODE = "root@64.226.86.32"
 
 pipeline {
     agent any
@@ -11,7 +11,6 @@ pipeline {
                 echo 'Installing Ansible'
                 script {
                     dir(PROJECT_DIR) {
-                        
                         sshagent(['dev-ops-bootcamp']) {
                             def shellCmd = "./configure-control-node.sh"
 
