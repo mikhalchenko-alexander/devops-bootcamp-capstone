@@ -6,7 +6,7 @@ database:
   rootPass: c2VjcmV0 # secret
 
 app:
-  image: 458405758445.dkr.ecr.eu-central-1.amazonaws.com/11-eks-java-app
+  image: 458405758445.dkr.ecr.eu-central-1.amazonaws.com/1-eks-java-app
   version: "1.21.0-34"
   port: 8080
   replicas: 3
