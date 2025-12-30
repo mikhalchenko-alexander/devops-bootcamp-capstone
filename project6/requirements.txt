@@ -1,0 +1,5 @@
+boto3==1.39.17
+paramiko==4.0.0
+requests==2.32.4
+schedule==1.2.2
+python-dotenv==1.2.1

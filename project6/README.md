@@ -20,4 +20,14 @@ Python, Linode, Docker, Linux
 
 ### Steps to run
 
-1. 
+1. ```sh
+   cp .env.example .env
+   ```
+2. Fill in enviornment variables in [.env](.env)
+3. Create/activate Python virtual environment
+4. Install dependencies
+   ```sh
+   pip install -r requirements.txt
+   ``` 
+5. Run [main.py](main.py) script to provision the server, install Docker, run the application on it and start monitoring
+   it
