@@ -2,6 +2,7 @@ import smtplib
 import ssl
 from email.message import EmailMessage
 from os import environ as env
+from os import path
 from time import sleep
 
 import boto3
@@ -19,6 +20,7 @@ SMTP_USER = env['SMTP_USER']
 SMTP_PASSWORD = env['SMTP_PASSWORD']
 SMTP_FROM = env['SMTP_FROM']
 SMTP_TO = env['SMTP_TO']
+SSH_KEY_FILE = path.expanduser('~/.ssh/devops-bootcamp.pem')
 
 session = boto3.Session(profile_name=AWS_PROFILE)
 ec2_client = session.client('ec2')
@@ -49,7 +51,16 @@ def create_instance():
 
 def get_instance():
     resp = ec2_client.describe_instances(Filters=[{'Name': 'tag:Name', 'Values': ['DevOps Automation with Python']}])
-    return resp['Reservations'][0]['Instances'][0]
+
+    reservations = resp['Reservations']
+    if not reservations or len(reservations) == 0:
+        return None
+
+    instances = reservations[0]['Instances']
+    if not instances or len(instances) == 0:
+        return None
+
+    return instances[0]
 
 
 def instance_ready(inst_id):
@@ -80,7 +91,7 @@ def initialize_nginx(ip_address):
     with paramiko.SSHClient() as ssh_client:
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh_client.connect(hostname=ip_address, username='ubuntu',
-                       key_filename='~/.ssh/devops-bootcamp.pem')
+                       key_filename=SSH_KEY_FILE)
     stdin, stdout, stderr = ssh_client.exec_command(
         """sudo apt-get update
             && sudo apt-get upgrade -y
@@ -117,7 +128,7 @@ def restart_nginx(ip_address):
     with paramiko.SSHClient() as ssh_client:
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh_client.connect(hostname=ip_address, username='ubuntu',
-                           key_filename='~/.ssh/devops-bootcamp.pem')
+                           key_filename=SSH_KEY_FILE)
         stdin, stdout, stderr = ssh_client.exec_command("sudo docker restart devops-nginx")
         print("Output:")
         print(stdout.readlines())
@@ -145,21 +156,41 @@ def handle_unhealthy_app(ip_address):
 
 
 def open_ports(sg_id):
-    ec2_client.authorize_security_group_ingress(
-        GroupId=sg_id,
-        FromPort=22,
-        ToPort=22,
-        IpProtocol='tcp',
-        CidrIp='0.0.0.0/0'
+    rules_response = ec2_client.describe_security_group_rules(
+        Filters=[
+            {
+                'Name': 'group-id',
+                'Values': [sg_id]
+            },
+        ],
     )
 
-    ec2_client.authorize_security_group_ingress(
-        GroupId=sg_id,
-        FromPort=8080,
-        ToPort=8080,
-        IpProtocol='tcp',
-        CidrIp='0.0.0.0/0'
-    )
+    rules = rules_response['SecurityGroupRules']
+    port_22_is_open = False
+    port_8080_is_open = False
+    for rule in rules:
+        if rule['FromPort'] == 22 and rule['ToPort'] == 22 and rule['IpProtocol'] == 'tcp':
+            port_22_is_open = True
+        if rule['FromPort'] == 8080 and rule['ToPort'] == 8080 and rule['IpProtocol'] == 'tcp':
+            port_8080_is_open = True
+
+    if not port_22_is_open:
+        ec2_client.authorize_security_group_ingress(
+            GroupId=sg_id,
+            FromPort=22,
+            ToPort=22,
+            IpProtocol='tcp',
+            CidrIp='0.0.0.0/0'
+        )
+
+    if not port_8080_is_open:
+        ec2_client.authorize_security_group_ingress(
+            GroupId=sg_id,
+            FromPort=8080,
+            ToPort=8080,
+            IpProtocol='tcp',
+            CidrIp='0.0.0.0/0'
+        )
 
 
 def cleanup_instance():
