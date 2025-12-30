@@ -31,6 +31,6 @@ Python, Linode, Docker, Linux
    ``` 
 5. Run [main.py](main.py) script to
    1. Provision the server
-   2. install Docker
+   2. Install Docker
    3. Run the NGinx application on the instance
    4. Start monitoring the app and restart it when it goes down
